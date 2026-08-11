@@ -245,6 +245,120 @@
         li {
             margin-bottom: 10px;
         }
+
+        /* 懸浮 Chat Box 樣式 (Mac 風格) */
+        #chat-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 999;
+        }
+
+        #chat-toggle-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            box-shadow: 0 8px 24px rgba(0, 113, 227, 0.4);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #chat-toggle-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 12px 30px rgba(0, 113, 227, 0.6);
+        }
+
+        #chat-box {
+            display: none;
+            flex-direction: column;
+            width: 340px;
+            height: 480px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-bottom: 15px;
+            animation: fadeInPage 0.3s ease;
+        }
+
+        #chat-header {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .chat-msg {
+            padding: 10px 14px;
+            border-radius: 14px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .msg-user {
+            background: var(--accent-blue);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg-ai {
+            background: rgba(0, 0, 0, 0.06);
+            color: var(--text-dark);
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        #chat-input-container {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            display: flex;
+            gap: 8px;
+        }
+
+        #chat-input {
+            flex: 1;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            outline: none;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        #chat-send-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -310,7 +424,7 @@
     <div id="page2" class="content-page">
         <div class="back-btn" onclick="goHome()">← 返回主畫面</div>
         <div class="glass-container">
-            <h1>🧠 破解 LLM 運作迷思 (核心原理解析)</h1>
+            <h1>🧠 破解 LLM 運作迷思 (核心原原理解析)</h1>
             <p>直接破除觀念誤區，還原 AI 在你電腦中真正的運作架構。</p>
             
             <h2>第一章：三大誤解與真相</h2>
@@ -336,7 +450,7 @@
         </div>
     </div>
 
-    <!-- 頁面三：VS Code 開啟旅程 (新增教學) -->
+    <!-- 頁面三：VS Code 開啟旅程 -->
     <div id="page3" class="content-page">
         <div class="back-btn" onclick="goHome()">← 返回主畫面</div>
         <div class="glass-container">
@@ -358,7 +472,7 @@
 git add .
 
 # 2. 建立存檔點並寫下更新訊息
-git commit -m "更新網站內容與按鈕"
+git commit -m "更新網站內容與聊天室"
 
 # 3. 將程式碼推送到 GitHub 的 main 分支
 git push -u origin main</code></pre>
@@ -377,8 +491,27 @@ git push -u origin main</code></pre>
         </div>
     </div>
 
-    <!-- 頁面切換的 JavaScript 邏輯 -->
+    <!-- 懸浮 UUI AI 聊天室 (Chat Box Widget) -->
+    <div id="chat-widget">
+        <div id="chat-box">
+            <div id="chat-header">
+                <span>💬 UUI 程式碼顧問</span>
+                <span style="cursor: pointer;" onclick="toggleChat()">✕</span>
+            </div>
+            <div id="chat-messages">
+                <div class="chat-msg msg-ai">你好！我是你的 UUI 顧問，有什麼程式碼或設計問題需要幫忙嗎？</div>
+            </div>
+            <div id="chat-input-container">
+                <input type="text" id="chat-input" placeholder="輸入訊息..." onkeypress="handleKeyPress(event)">
+                <button id="chat-send-btn" onclick="sendMessage()">發送</button>
+            </div>
+        </div>
+        <button id="chat-toggle-btn" onclick="toggleChat()">💬</button>
+    </div>
+
+    <!-- 腳本邏輯 -->
     <script>
+        // 頁面切換邏輯
         function showPage(pageId) {
             document.getElementById('main-menu').style.display = 'none';
             document.getElementById('page1').style.display = 'none';
@@ -399,6 +532,65 @@ git push -u origin main</code></pre>
             mainMenu.style.display = 'flex';
             mainMenu.style.animation = 'none';
             mainMenu.style.opacity = '1';
+        }
+
+        // Chat Box 切換邏輯
+        function toggleChat() {
+            const chatBox = document.getElementById('chat-box');
+            chatBox.style.display = (chatBox.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 發送訊息給本機 Ollama API
+        async function sendMessage() {
+            const inputEl = document.getElementById('chat-input');
+            const message = inputEl.value.trim();
+            if (!message) return;
+
+            const msgContainer = document.getElementById('chat-messages');
+
+            // 顯示使用者訊息
+            msgContainer.innerHTML += `<div class="chat-msg msg-user">${message}</div>`;
+            inputEl.value = '';
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+
+            // 顯示思考中提示
+            const loadingId = 'loading-' + Date.now();
+            msgContainer.innerHTML += `<div class="chat-msg msg-ai" id="${loadingId}">思考中...</div>`;
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+
+            try {
+                // 呼叫本機 Ollama API
+                const response = await fetch('http://localhost:11434/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'llama3', // 本機模型名稱 (可改為你的 UUI 烙印模型名稱)
+                        messages: [
+                            { role: 'system', content: '你是一位資深的全端工程師與 UI/UX 顧問，一律用繁體中文回答。' },
+                            { role: 'user', content: message }
+                        ],
+                        stream: false
+                    })
+                });
+
+                const data = await response.json();
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) {
+                    loadingEl.innerText = data.message.content;
+                }
+            } catch (err) {
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) {
+                    loadingEl.innerText = '⚠️ 無法連線至本機 Ollama。請確認 Ollama 已啟動，且開啟了 CORS 跨域設定。';
+                }
+            }
+            msgContainer.scrollTop = msgContainer.scrollHeight;
         }
     </script>
 </body>
