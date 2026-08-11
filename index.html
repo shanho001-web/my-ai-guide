@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 AI 專屬助手指南</title>
+    <style>
+        /* 全局設定與 Mac 風格字體 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --text-dark: #1d1d1f;
+            --text-gray: #86868b;
+            --accent-blue: #0071e3;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-attachment: fixed;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 4-6秒開場動畫 */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOutScreen 5s ease-in-out forwards;
+        }
+
+        .intro-text {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeInOutText 4.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeInOutText {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        @keyframes fadeOutScreen {
+            0% { opacity: 1; pointer-events: auto; }
+            90% { opacity: 1; pointer-events: auto; }
+            100% { opacity: 0; pointer-events: none; visibility: hidden; }
+        }
+
+        /* 主選單畫面 */
+        #main-menu {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            opacity: 0;
+            animation: fadeInMenu 1s ease-in-out 4.8s forwards; /* 等動畫結束後浮現 */
+        }
+
+        @keyframes fadeInMenu {
+            to { opacity: 1; }
+        }
+
+        .main-title {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 0 20px;
+        }
+
+        .glass-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 320px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .glass-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+        }
+
+        .glass-btn h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+        }
+
+        .glass-btn p {
+            margin: 0;
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* 教學內容頁面 */
+        .content-page {
+            display: none; /* 預設隱藏 */
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 80px 20px;
+            animation: fadeInPage 0.5s ease;
+        }
+
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--accent-blue);
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .glass-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: var(--glass-shadow);
+            border-radius: 24px;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 15px;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 30px;
+            color: #1a1a1a;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        /* 備註與提示區塊 */
+        .remark {
+            background-color: rgba(255, 204, 0, 0.15);
+            border-left: 4px solid #ffcc00;
+            padding: 15px 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        /* 圖片佔位符 */
+        .image-placeholder {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px dashed rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-gray);
+            margin: 25px 0;
+            font-size: 0.9rem;
+        }
+
+        /* 程式碼區塊 */
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9rem;
+        }
+        
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 4-6秒開場動畫 -->
+    <div id="intro-screen">
+        <div class="intro-text">你的第一個新的開端</div>
+    </div>
+
+    <!-- 首頁選單 -->
+    <div id="main-menu">
+        <div class="main-title">想從哪裡開始探索你的專屬 AI？</div>
+        <div class="button-container">
+            <div class="glass-btn" onclick="showPage('page1')">
+                <h2>文件一</h2>
+                <p>從 0 到 1 打造你的專屬 AI 助手 (Open WebUI 桌面版操作指南)</p>
+            </div>
+            <div class="glass-btn" onclick="showPage('page2')">
+                <h2>文件二</h2>
+                <p>破解迷思！LLM 運作原理與 API 呼叫全解析</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件一頁面 -->
+    <div id="page1" class="content-page">
+        <div class="back-btn" onclick="goHome()">← 返回主畫面</div>
+        <div class="glass-container">
+            <h1>文件一：從 0 到 1 打造你的專屬 AI 助手 (Open WebUI 桌面版操作指南)</h1>
+            <p>這是一份為初學者量身打造的實戰手冊。我們將使用「Open WebUI 桌面版」，在完全不寫程式碼的情況下，建立你的專屬 AI（例如：UI/UX 顧問）。</p>
+            
+            <div class="image-placeholder">
+                📸 [建議配圖：Open WebUI 桌面版乾淨的首頁截圖]
+            </div>
+
+            <h2>第一階段：下載與安裝</h2>
+            <ol>
+                <li><strong>取得安裝檔：</strong>
+                    <ul>
+                        <li>打開瀏覽器，前往官方下載頁面：<code>https://github.com/open-webui/desktop/releases</code></li>
+                        <li>往下滑動找到 <strong>Assets</strong> 列表，點擊下載對應你系統的檔案（Windows 請點擊結尾為 <code>.exe</code> 的檔案，如 <code>open-webui-setup-x64.exe</code>）。</li>
+                    </ul>
+                </li>
+                <li><strong>執行安裝：</strong>
+                    <ul>
+                        <li>雙擊下載好的 <code>.exe</code> 檔案，一路點擊「下一步 (Next)」直到安裝完成。</li>
+                    </ul>
+                </li>
+                <li><strong>首次啟動與帳號建立：</strong>
+                    <ul>
+                        <li>在桌面雙擊「Open WebUI」圖示開啟軟體。</li>
+                        <li>畫面會彈出「設定您的環境」，請保持預設，直接點擊黑色的 <strong>「繼續」</strong>。</li>
+                    </ul>
+                </li>
+            </ol>
+            
+            <div class="remark">
+                <strong>⚠️ 帳號與密碼輸入注意：</strong><br>
+                首次進入系統會要求你「註冊 (Sign Up)」建立管理員帳號。請在此處輸入你自訂的名稱、Email 與<strong>密碼</strong>。請放心：這個帳號密碼僅存放在你這台電腦的本機端，不會連上外網，隨便填寫也能通過。
+            </div>
+
+            <h2>第二階段：建立與調整你的專屬 AI 模型</h2>
+            <p>我們要在系統中建立一個全新的「角色大腦」。</p>
+            
+            <div class="image-placeholder">
+                📸 [建議配圖：Workspace (工作區) 新增模型的設定畫面]
+            </div>
+
+            <ol>
+                <li><strong>進入工作區：</strong> 點擊畫面左側選單的 <strong>Workspace（工作區）</strong>。</li>
+                <li><strong>新增模型：</strong> 點擊頂部的 <strong>Models（模型）</strong> 標籤，然後點擊右上角的 <strong>+ Create a Model（建立模型）</strong>。</li>
+                <li><strong>設定模型屬性（這就是調整的核心）：</strong>
+                    <ul>
+                        <li><strong>Name (名稱)：</strong> 輸入你的 AI 名字，例如 <code>UI/UX 設計顧問</code>。</li>
+                        <li><strong>Base Model (底層模型)：</strong> 點擊下拉選單，選擇 Ollama 已經下載好的模型（例如 <code>llama3</code>）。</li>
+                        <li><strong>System Prompt (系統提示詞)：</strong> 這是 AI 的靈魂。請將你要賦予它的規則貼在這裡，例如：<br>
+                        <em>> 你是一位資深 UI/UX 設計師。請針對我提出的介面需求，提供關於操作流程 (UX) 與排版配色 (UI) 的具體建議。</em></li>
+                    </ul>
+                </li>
+                <li><strong>儲存：</strong> 點擊右下角的 <strong>Save & Create（儲存並建立）</strong>。</li>
+            </ol>
+
+            <h2>第三階段：存取海量資料（知識庫 RAG）</h2>
+            <p>如果你的 AI 需要參考長達數百頁的年度文件、PDF 或是設計規範，不能塞進 Prompt，必須用知識庫存取。</p>
+            <ol>
+                <li><strong>建立知識庫：</strong> 點擊左側選單的 <strong>Workspace</strong> ➔ <strong>Knowledge（知識庫）</strong> ➔ 右上角的 <strong>+</strong>。</li>
+                <li><strong>上傳文件：</strong> 命名知識庫（例如 <code>年度設計規範</code>），然後將你的 PDF/TXT 檔案直接拖曳進去，點擊儲存。</li>
+                <li><strong>綁定模型：</strong> 回到 <strong>Models</strong> 頁面，點擊你剛才建立的 <code>UI/UX 設計顧問</code> 旁邊的編輯按鈕（鉛筆圖示）。往下捲動找到 <strong>Knowledge</strong> 區塊，勾選 <code>年度設計規範</code>，最後點擊儲存。</li>
+            </ol>
+
+            <h2>第四階段：日常對話與手動刪除/管理</h2>
+            <ul>
+                <li><strong>開始對話：</strong> 點擊左上角的 <strong>+ (新對話)</strong>，在畫面正上方頂部的下拉選單中，選擇 <code>UI/UX 設計顧問</code>，即可開始發問。</li>
+                <li><strong>手動修改 (Edit)：</strong> 如果覺得 AI 語氣不對，回到 <strong>Workspace ➔ Models</strong>，點擊該模型旁邊的「鉛筆圖示」，就能隨時修改 System Prompt。</li>
+                <li><strong>手動刪除 (Delete)：</strong> 如果不需要這個助手了，在 <strong>Workspace ➔ Models</strong> 列表中，點擊該模型最右側的「垃圾桶圖示」，即可將其徹底刪除（這不會刪除底層的 Llama 3 模型，只會刪除這個角色設定）。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 文件二頁面 -->
+    <div id="page2" class="content-page">
+        <div class="back-btn" onclick="goHome()">← 返回主畫面</div>
+        <div class="glass-container">
+            <h1>文件二：破解迷思！LLM 運作原理與 API 呼叫全解析</h1>
+            <p>這份文件將由淺入深，直接破除你之前的觀念誤區，還原 AI 在你電腦中真正的運作架構。</p>
+            
+            <div class="image-placeholder">
+                📸 [建議配圖：簡單的流程圖，顯示 網站 -> Ollama -> 回傳結果]
+            </div>
+
+            <h2>第一章：你的三大誤解與真相破解</h2>
+            
+            <h3>❌ 誤解一：Open WebUI 是幫我處理 API 與轉發資料的核心系統。</h3>
+            <p><strong>✅ 真相：Open WebUI 只是個「展示間（試衣鏡）」。</strong><br>
+            它是為了讓你不寫程式碼就能用滑鼠點擊、測試 AI 而存在的。當你要開發自己的網站或 App 時，Open WebUI 完全可以關閉，它並不參與正式的 API 資料轉發。</p>
+
+            <h3>❌ 誤解二：我在 Open WebUI 寫好的 Prompt，會自動存進 Ollama 裡。</h3>
+            <p><strong>✅ 真相：兩者的資料庫是獨立的。</strong><br>
+            你在 Open WebUI 寫的「UI/UX 顧問設定」，只存在 Open WebUI 的沙盒裡。Ollama 底層本身依然是一張白紙（純潔的 Llama 3）。</p>
+
+            <h3>❌ 誤解三：我的網站 ➔ 呼叫 Ollama ➔ Ollama 去 Open WebUI 找設定 ➔ 回傳。</h3>
+            <p><strong>✅ 真相：你的網站 ➔ 帶著設定直接呼叫 Ollama ➔ Ollama 運算後直接回傳。</strong><br>
+            正式運作時，資料流向是「直線」的，完全沒有 Open WebUI 的戲份。</p>
+
+            <h2>第二章：LLM 真正的運作與呼叫架構</h2>
+            <p>要讓你的網站或程式呼叫 AI，系統必須分工明確：</p>
+            <ol>
+                <li><strong>「引擎」：Ollama</strong>
+                    <ul>
+                        <li><strong>職責：</strong> 負責啟動顯示卡與 CPU 進行暴力運算。</li>
+                        <li><strong>狀態：</strong> 必須長開。它預設會在你的電腦上開啟一個 API 門牌號碼：<code>http://localhost:11434</code>。</li>
+                    </ul>
+                </li>
+                <li><strong>「大腦白紙」：底層模型 (Base Model)</strong>
+                    <ul>
+                        <li>例如 Llama 3、Qwen。它們懂很多知識，但沒有特定性格。</li>
+                    </ul>
+                </li>
+                <li><strong>「店面」：你寫的程式 / 網站</strong>
+                    <ul>
+                        <li><strong>職責：</strong> 把使用者的問題，加上你規定好的「角色設定 (Prompt)」，打包成一個包裹，直接丟給 Ollama 算答案。</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h2>第三章：如何將「沙盒」成果變成「正式 API 呼叫」？</h2>
+            <p>你在 Open WebUI 測試出一套完美的 Prompt 後，有兩種方法可以讓你的程式呼叫它：</p>
+
+            <h3>方法 A：由你的程式碼主動帶入規則 (最常用)</h3>
+            <p>把你在 Open WebUI 寫的設定，直接寫進你的程式碼裡發送給 Ollama。</p>
+            
+<pre><code>// 這是一段完整的 JavaScript 呼叫 API 範例
+fetch('http://localhost:11434/api/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'llama3', 
+    messages: [
+      // 將你測試好的 Prompt 放在這裡
+      { role: 'system', content: '你是一位資深 UI/UX 設計師，請針對操作流程給出專業建議。' },
+      { role: 'user', content: '幫我評估這個登入畫面的排版好不好？' }
+    ]
+  })
+});</code></pre>
+
+            <h3>方法 B：將規則「烙印」進 Ollama，變成一個新實體 (Modelfile)</h3>
+            <p>如果你不想每次在程式碼裡重寫一大串規則，你可以用終端機強行在 Ollama 裡創造一個新模型。</p>
+            
+            <p><strong>步驟 1：在電腦隨便一個地方建立一個純文字檔，命名為 <code>Modelfile</code>（不需要副檔名），貼入完整程式碼：</strong></p>
+<pre><code># 1. 繼承底層模型
+FROM llama3
+
+# 2. 烙印你的專屬規則
+SYSTEM """
+你是一位資深 UI/UX 設計師。請針對操作流程 (UX) 與排版配色 (UI) 提供具體建議。
+"""</code></pre>
+
+            <p><strong>步驟 2：打開電腦的 Terminal (終端機/命令提示字元)，輸入以下完整指令執行編譯：</strong></p>
+<pre><code>ollama create my-uiux-agent -f ./Modelfile</code></pre>
+
+            <p><strong>步驟 3：用 API 呼叫新模型</strong></p>
+            <p>現在，Ollama 的資料庫裡真正有這個模型了！你的網站以後發送 API 時，不用再傳送一長串 System Prompt，只要直接指定模型名稱即可：</p>
+<pre><code>// 你的網站後端程式碼
+fetch('http://localhost:11434/api/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'my-uiux-agent', // 直接呼叫你剛才烙印好的新實體
+    messages: [
+      { role: 'user', content: '幫我評估這個登入畫面的排版好不好？' }
+    ]
+  })
+});</code></pre>
+
+        </div>
+    </div>
+
+    <!-- 頁面切換的 JavaScript 邏輯 -->
+    <script>
+        // 隱藏主選單，顯示選定的頁面
+        function showPage(pageId) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('page1').style.display = 'none';
+            document.getElementById('page2').style.display = 'none';
+            
+            const targetPage = document.getElementById(pageId);
+            targetPage.style.display = 'block';
+            
+            // 每次進入頁面時捲動到最上方
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 隱藏所有頁面，返回主選單
+        function goHome() {
+            document.getElementById('page1').style.display = 'none';
+            document.getElementById('page2').style.display = 'none';
+            
+            const mainMenu = document.getElementById('main-menu');
+            mainMenu.style.display = 'flex';
+            mainMenu.style.animation = 'none'; // 取消開場的延遲動畫
+            mainMenu.style.opacity = '1';
+        }
+    </script>
+</body>
+</html>
