@@ -1,111 +1,405 @@
-I'd be happy to help! Based on the code you provided, it seems like a tutorial for building an AI-powered UI/UX consultant using Open WebUI. Here's my suggested approach:
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 AI 專屬助手與發佈指南</title>
+    <style>
+        /* 全局設定與 Mac 風格字體 */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            --text-dark: #1d1d1f;
+            --text-gray: #86868b;
+            --accent-blue: #0071e3;
+        }
 
-**Page 1: Introduction and Installation**
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-attachment: fixed;
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
 
-* Start by introducing the concept of Open WebUI and its capabilities as an AI-powered tool for building custom interfaces.
-* Provide step-by-step instructions for downloading and installing Open WebUI on the user's computer, along with any necessary setup or configuration.
+        /* 4-6秒開場動畫 */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOutScreen 5s ease-in-out forwards;
+        }
 
-HTML:
-```html
-<h2>第一階段：下載與安裝</h2>
-<ol>
-    <li><strong>取得安裝檔：</strong>前往官方下載頁面 <code>https://github.com/open-webui/desktop/releases</code>，點擊下載結尾為 <code>.exe</code> 的檔案。</li>
-    <li><strong>執行安裝：</strong>雙擊下載好的檔案，一路點擊「下一步」直到安裝完成。</li>
-    <li><strong>首次啟動assistant
+        .intro-text {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeInOutText 4.5s ease-in-out forwards;
+        }
 
-Here's the revised code with the added teaching material:
+        @keyframes fadeInOutText {
+            0% { opacity: 0; transform: translateY(20px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
 
-**Page 1: Introduction and Installation**
+        @keyframes fadeOutScreen {
+            0% { opacity: 1; pointer-events: auto; }
+            90% { opacity: 1; pointer-events: auto; }
+            100% { opacity: 0; pointer-events: none; visibility: hidden; }
+        }
 
-<h2>第一階段：下載與安裝</h2>
-<ol>
-    <li><strong>取得安裝檔：</strong>前往官方下載頁面 <code>https://github.com/open-webui/desktop/releases</code>，點擊下載結尾為 <code>.exe</code> 的檔案。</li>
-    <li><strong>執行安裝：</strong>雙擊下載好的檔案，一路點擊「下一步」直到安裝完成。</li>
-    <li><strong>首次啟動：</strong>在桌面雙擊圖示開啟，跳出環境設定時保持預設點擊<strong>「繼續」</strong>。</li>
-</ol>
+        /* 主選單畫面 */
+        #main-menu {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            opacity: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            animation: fadeInMenu 1s ease-in-out 4.8s forwards;
+        }
 
-<div class="remark">
-    <strong>⚠️ 帳號建立注意：</strong><br>
-    首次進入系統要求輸入帳號密碼，這僅存放在你這台電腦的本機端，不會連上外網，隨便填寫也能通過。
-</div>
+        @keyframes fadeInMenu {
+            to { opacity: 1; }
+        }
 
-**Page 2: Setting up the Model**
+        .main-title {
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
 
-<h2>第二階段：建立與調整模型</h2>
-<ol>
-    <li>點擊左側選單的 <strong>Workspace（工作區）</strong>，進入 <strong>Models（模型）</strong> 標籤，點擊 <strong>+ Create a Model</strong>。</li>
-    <li><strong>Name (名稱)：</strong>輸入 <code>UI/UX 設計顧問</code>。</li>
-    <li><strong>System Prompt (系統提示詞)assistant
+        .button-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1100px;
+        }
 
-Here is the revised code with the added teaching material:
+        .glass-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: var(--glass-shadow);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 320px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-**Page 1: Introduction and Installation**
+        .glass-btn:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.2);
+        }
 
-<h2>第一階段：下載與安裝</h2>
-<ol>
-    <li><strong>取得安裝檔：</strong>前往官方下載頁面 <code>https://github.com/open-webui/desktop/releases</code>，點擊下載結尾為 <code>.exe</code> 的檔案。</li>
-    <li><strong>執行安裝：</strong>雙擊下載好的檔案，一路點擊「下一步」直到安裝完成。</li>
-    <li><strong>首次啟動assistant
+        .glass-btn h2 {
+            margin: 0 0 10px 0;
+            font-size: 1.4rem;
+        }
 
-Here is the revised code with the added teaching material:
+        .glass-btn p {
+            margin: 0;
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
 
-**Page 1: Introduction and Installation**
+        /* 教學內容頁面 */
+        .content-page {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 80px 20px;
+            animation: fadeInPage 0.5s ease;
+        }
 
-<h2>第一階段：下載與安裝</h2>
-<ol>
-    <li><strong>取得安裝檔：</strong>前往官方下載頁面 <code>https://github.com/open-webui/desktop/releases</code>，點擊下載結尾為 <code>.exe</code> 的檔案。</li>
-    <li><strong>執行安裝assistant
+        @keyframes fadeInPage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-Here is the revised code with the added teaching material:
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--accent-blue);
+            transition: 0.2s;
+        }
 
-**Page 1: Introduction and Installation**
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
 
-<h2>第一階段：下載與安裝</h2>
-<ol>
-    <li><strong>取得安裝檔：</strong>前往官方下載頁面 <code>https://github.com/open-webui/desktop/releases</code>，點擊下載結尾為 <code>.exe</code> 的檔案。</li>
-    <li><strong>執行安裝：</strong>雙击下载好的文件，一路点擊「下一步」直到安装完成。</li>
-    <li><strong>首次啟動：</strong>在桌面双击图示开启，跳出环境设置时保持默认点擊<strong>「繼續」</strong>。</li>
-</ol>
+        .glass-container {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: var(--glass-shadow);
+            border-radius: 24px;
+            padding: 40px;
+        }
 
-<div class="remark">
-    <strong>⚠️ 帳號建立注意：</strong><br>
-    首次進入系統要求輸入帳号密碼，这仅存放在你這台電腦的本机端，不會連上外網，随便填寫也能通過。
-</div>
+        h1 {
+            font-size: 2.2rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding-bottom: 15px;
+            margin-top: 0;
+        }
 
-**Page 2: Setting up the Model**
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 30px;
+            color: #1a1a1a;
+        }
 
-<h2>第二階段：建立与调节模型</h2>
-<ol>
-    <li>點擊左侧選单的 <strong>Workspace（工作區）</strong>，進入 <strong>Models（模型）</strong> 標籤，點擊 <strong>+ Create a Model</strong>。</li>
-    <li><strong>Name (名稱)：</strong>輸入 <code>UI/UX 設計顧問</code>。</li>
-    <li><strong>System Prompt (系統提示詞)：</strong>貼上角色規則，例如：<em>> 你是一位資深設計師。請針對介面需求提供 UX 與 UI 建議。</em></li>
-    <li>點擊 <strong>Save & Create（儲存並建立）</strong>。</li>
-</ol>
+        h3 {
+            font-size: 1.2rem;
+            color: #333;
+        }
 
-**Page 3: VS Code Development**
+        /* 備註與提示區塊 */
+        .remark {
+            background-color: rgba(255, 204, 0, 0.15);
+            border-left: 4px solid #ffcc00;
+            padding: 15px 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
 
-<h2>VS Code 開啟你的旅程 (網頁發佈實戰)</h2>
-<ol>
-    <li><strong>Terminal 上載必备指令：</strong>在 VS Code 中打開你的终端机，依序輸入以下指令。如果你是第一次使用，必須先设置你的「身份」，否则系統會報錯阻擋你存檔。</li>
-    <div class="remark">
-        <strong>💡 破解「Author identity unknown」錯誤：</strong><br>
-        如果你遇到這個錯誤，代表 Git 不認識你。請先輸入這兩行綁定身份（替換成你的資料）：<br><br>
-        <code>git config --global user.email "你的Email"</code><br>
-        <code>git config --global user.name "你的暱稱"</code>
+        .highlight-remark {
+            background-color: rgba(0, 113, 227, 0.1);
+            border-left: 4px solid var(--accent-blue);
+            padding: 15px 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+
+        /* 圖片佔位符 */
+        .image-placeholder {
+            background: rgba(0, 0, 0, 0.05);
+            border: 2px dashed rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-gray);
+            margin: 25px 0;
+            font-size: 0.9rem;
+        }
+
+        /* 程式碼區塊 */
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 4-6秒開場動畫 -->
+    <div id="intro-screen">
+        <div class="intro-text">你的第一個新的開端</div>
     </div>
-    <li><strong>完整上傳三步曲：</strong></li>
+
+    <!-- 首頁選單 -->
+    <div id="main-menu">
+        <div class="main-title">想從哪裡開始探索你的專屬 AI？</div>
+        <div class="button-container">
+            <div class="glass-btn" onclick="showPage('page1')">
+                <h2>🚀 打造專屬 AI 助手</h2>
+                <p>零基礎上手 Open WebUI 桌面版操作指南，快速建立你的體驗顧問。</p>
+            </div>
+            <div class="glass-btn" onclick="showPage('page2')">
+                <h2>🧠 破解 LLM 運作迷思</h2>
+                <p>核心原理解析：Ollama、API 呼叫與網站資料流向全圖解。</p>
+            </div>
+            <div class="glass-btn" onclick="showPage('page3')">
+                <h2>💻 VS Code 開啟旅程</h2>
+                <p>網站發佈實戰：Git 上載指令與 GitHub x Vercel 雲端發佈教學。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁面一：打造專屬 AI 助手 -->
+    <div id="page1" class="content-page">
+        <div class="back-btn" onclick="goHome()">← 返回主畫面</div>
+        <div class="glass-container">
+            <h1>🚀 打造專屬 AI 助手 (零基礎上手)</h1>
+            <p>這是一份為初學者量身打造的實戰手冊。我們將使用「Open WebUI 桌面版」，在完全不寫程式碼的情況下，建立你的專屬 AI（例如：UI/UX 顧問）。</p>
+            
+            <div class="image-placeholder">
+                📸 [建議配圖：Open WebUI 桌面版乾淨的首頁截圖]
+            </div>
+
+            <h2>第一階段：下載與安裝</h2>
+            <ol>
+                <li><strong>取得安裝檔：</strong>前往官方下載頁面 <code>https://github.com/open-webui/desktop/releases</code>，點擊下載結尾為 <code>.exe</code> 的檔案。</li>
+                <li><strong>執行安裝：</strong>雙擊下載好的檔案，一路點擊「下一步」直到安裝完成。</li>
+                <li><strong>首次啟動：</strong>在桌面雙擊圖示開啟，跳出環境設定時保持預設點擊<strong>「繼續」</strong>。</li>
+            </ol>
+            
+            <div class="remark">
+                <strong>⚠️ 帳號建立注意：</strong><br>
+                首次進入系統要求輸入帳號密碼，這僅存放在你這台電腦的本機端，不會連上外網，隨便填寫也能通過。
+            </div>
+
+            <h2>第二階段：建立與調整模型</h2>
+            <ol>
+                <li>點擊左側選單的 <strong>Workspace（工作區）</strong>，進入 <strong>Models（模型）</strong> 標籤，點擊 <strong>+ Create a Model</strong>。</li>
+                <li><strong>Name (名稱)：</strong>輸入 <code>UI/UX 設計顧問</code>。</li>
+                <li><strong>System Prompt (系統提示詞)：</strong>貼上角色規則，例如：<em>> 你是一位資深設計師。請針對介面需求提供 UX 與 UI 建議。</em></li>
+                <li>點擊 <strong>Save & Create（儲存並建立）</strong>。</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- 頁面二：破解 LLM 迷思 -->
+    <div id="page2" class="content-page">
+        <div class="back-btn" onclick="goHome()">← 返回主畫面</div>
+        <div class="glass-container">
+            <h1>🧠 破解 LLM 運作迷思 (核心原理解析)</h1>
+            <p>直接破除觀念誤區，還原 AI 在你電腦中真正的運作架構。</p>
+            
+            <h2>第一章：三大誤解與真相</h2>
+            <h3>❌ 誤解：Open WebUI 是幫我處理 API 與轉發資料的核心系統。</h3>
+            <p><strong>✅ 真相：Open WebUI 只是個「展示間（試衣鏡）」。</strong>當你要開發自己的網站時，Open WebUI 完全可以關閉，它不參與 API 資料轉發。</p>
+
+            <h3>❌ 誤解：我的網站 ➔ 呼叫 Ollama ➔ Ollama 去 Open WebUI 找設定 ➔ 回傳。</h3>
+            <p><strong>✅ 真相：你的網站 ➔ 帶著設定直接呼叫 Ollama ➔ Ollama 運算後直接回傳。</strong>正式運作時，資料流向是直線的。</p>
+
+            <h2>第二章：如何呼叫 API？</h2>
+            <p>把你在 Open WebUI 測試好的 System Prompt 直接寫進程式碼發給 Ollama：</p>
+<pre><code>fetch('http://localhost:11434/api/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    model: 'llama3', 
+    messages: [
+      { role: 'system', content: '你是一位資深 UI/UX 設計師...' },
+      { role: 'user', content: '評估這個登入畫面？' }
+    ]
+  })
+});</code></pre>
+        </div>
+    </div>
+
+    <!-- 頁面三：VS Code 開啟旅程 (新增教學) -->
+    <div id="page3" class="content-page">
+        <div class="back-btn" onclick="goHome()">← 返回主畫面</div>
+        <div class="glass-container">
+            <h1>💻 VS Code 開啟你的旅程 (網頁發佈實戰)</h1>
+            <p>寫好漂亮的網頁後，接下來我們要在 VS Code 的終端機 (Terminal) 中使用 Git 指令，將程式碼上傳到雲端，並透過 Vercel 發佈給全世界觀看！</p>
+            
+            <h2>步驟一：Terminal 上載必備指令</h2>
+            <p>在 VS Code 中打開你的終端機，依序輸入以下指令。如果你是第一次使用，必須先設定你的「身份」，否則系統會報錯阻擋你存檔。</p>
+
+            <div class="remark">
+                <strong>💡 破解「Author identity unknown」錯誤：</strong><br>
+                如果你遇到這個錯誤，代表 Git 不認識你。請先輸入這兩行綁定身份（替換成你的資料）：<br><br>
+                <code>git config --global user.email "你的Email"</code><br>
+                <code>git config --global user.name "你的暱稱"</code>
+            </div>
+
+            <p><strong>完整上傳三步曲：</strong></p>
 <pre><code># 1. 將所有修改過的檔案加入暫存區 (注意 add 後面有空格加句號)
 git add .
+
 # 2. 建立存檔點並寫下更新訊息
 git commit -m "更新網站內容與按鈕"
+
 # 3. 將程式碼推送到 GitHub 的 main 分支
 git push -u origin main</code></pre>
-    <li><strong>GitHub 綁定發佈 App (Vercel)：</strong></li>
-<pre><code>Vercel 官網 <a href="https://vercel.com" target="_blank" style="color: var(--accent-blue);">https://vercel.com</a></code></pre>
-    <div class="remark">
-        <strong>🔧 關鍵備註：如何授權增加對應的發佈 App：</strong><br>
-        1. 登入 Vercel 官網時，務必點擊 <strong>「Continue with GitHub」</strong>。<br>
-        2. 此時會跳出 GitHub 的授權畫面 (Authorize application)。<br>
-        3. 在授權頁面中，你可以選擇 <strong>All repositories (允許存取所有專案)</strong> 或 <strong>Only select repositories (只允許存取特定專案)</strong>。<br>
-        4. 點擊綠色的 <strong>Install & Authorize</strong> 完成綁定。<br>
-        5. 經過授權後，在 Vercel 後台點擊 <strong>Import</strong> 你
+
+            <h2>步驟二：GitHub 綁定發佈 App (Vercel)</h2>
+            <p>當程式碼成功推送到 GitHub 後，我們需要讓 Vercel 有權限讀取你的專案，這樣它才能自動幫你架設網站。</p>
+
+            <div class="highlight-remark">
+                <strong>🔧 關鍵備註：如何授權增加對應的發佈 App</strong><br>
+                1. 登入 <a href="https://vercel.com" target="_blank" style="color: var(--accent-blue);">Vercel 官網</a> 時，務必點擊 <strong>「Continue with GitHub」</strong>。<br>
+                2. 此時會跳出 GitHub 的授權畫面 (Authorize application)。<br>
+                3. 在授權頁面中，你可以選擇 <strong>All repositories (允許存取所有專案)</strong> 或 <strong>Only select repositories (只允許存取特定專案)</strong>。<br>
+                4. 點擊綠色的 <strong>Install & Authorize</strong> 完成綁定。<br>
+                5. 綁定完成後，在 Vercel 後台點擊 <strong>Import</strong> 你的專案，接著點擊黑色的 <strong>Deploy</strong>，只要 5 秒鐘，你的專案就會生成專屬網址了！
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁面切換的 JavaScript 邏輯 -->
+    <script>
+        function showPage(pageId) {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('page1').style.display = 'none';
+            document.getElementById('page2').style.display = 'none';
+            document.getElementById('page3').style.display = 'none';
+            
+            const targetPage = document.getElementById(pageId);
+            targetPage.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goHome() {
+            document.getElementById('page1').style.display = 'none';
+            document.getElementById('page2').style.display = 'none';
+            document.getElementById('page3').style.display = 'none';
+            
+            const mainMenu = document.getElementById('main-menu');
+            mainMenu.style.display = 'flex';
+            mainMenu.style.animation = 'none';
+            mainMenu.style.opacity = '1';
+        }
+    </script>
+</body>
+</html>
